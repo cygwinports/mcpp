@@ -1,0 +1,32 @@
+NAME="mcpp"
+VERSION=2.7.2
+RELEASE=1
+CATEGORY="Devel"
+SUMMARY="C/C++ preprocessor"
+DESCRIPTION="mcpp is a C/C++ preprocessor with the highest conformance which
+implements C90, C99 and C++98.  mcpp has plentiful diagnostics and many
+pragmas.  It is useful to check portability of your program, and also
+useful to debug complicated macros."
+HOMEPAGE="http://mcpp.sourceforge.net/"
+SRC_URI="mirror://sourceforge/mcpp/mcpp-${VERSION}.tar.gz"
+PATCH_URI="
+	http://pkgs.fedoraproject.org/cgit/mcpp.git/plain/mcpp-manual.html.patch
+	http://pkgs.fedoraproject.org/cgit/mcpp.git/plain/patch.mcpp.2.7.2
+	http://pkgs.fedoraproject.org/cgit/mcpp.git/plain/mcpp-man.patch
+"
+
+CYGPORT_USE_UNSTABLE_API=1
+src_patch_hook() {
+	cp -f mcpp-gcc.1 mcpp.1
+}
+
+CYGCONF_ARGS="--enable-mcpplib"
+
+PKG_NAMES="mcpp libmcpp0 libmcpp-devel"
+mcpp_CONTENTS="usr/bin/mcpp.exe usr/share/doc/ usr/share/man/"
+libmcpp0_CATEGORY="Libs"
+libmcpp0_SUMMARY="${SUMMARY} library"
+libmcpp0_CONTENTS="usr/bin/cygmcpp-0.dll"
+libmcpp_devel_CATEGORY="Libs"
+libmcpp_devel_SUMMARY=${libmcpp0_SUMMARY}
+libmcpp_devel_CONTENTS="usr/include/mcpp_*.h usr/lib/libmcpp.dll.a"
