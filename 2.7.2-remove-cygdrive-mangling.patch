@@ -1,0 +1,58 @@
+--- origsrc/mcpp-2.7.2/src/system.c	2014-01-21 11:18:52.213230300 -0600
++++ src/mcpp-2.7.2/src/system.c	2014-01-21 11:23:41.348945800 -0600
+@@ -2459,17 +2441,13 @@ static char *   norm_path(
+ #if SYS_FAMILY == SYS_UNIX
+     char    slbuf2[ PATHMAX+1]; /* Working buffer for dereferencing */
+ #endif
+-#if SYSTEM == SYS_CYGWIN || SYSTEM == SYS_MINGW
++#if SYSTEM == SYS_MINGW
+     static char *   root_dir;
+                 /* System's root directory in Windows file system   */
+     static size_t   root_dir_len;
+-#if SYSTEM == SYS_CYGWIN
+-    static char *   cygdrive = "/cygdrive/";    /* Prefix for drive letter  */
+-#else
+     static char *   mingw_dir;          /* "/mingw" dir in Windows  */
+     static size_t   mingw_dir_len;
+ #endif
+-#endif
+ #if HOST_COMPILER == MSC
+     struct _stat    st_buf;
+ #else
+@@ -2558,36 +2536,6 @@ static char *   norm_path(
+ #endif
+     cp1 = norm_name;
+ 
+-#if SYSTEM == SYS_CYGWIN
+-    /* Convert to "/cygdirve/x/dir" style of absolute path-list     */
+-    if (len >= 8 && (memcmp( cp1, "/usr/bin", 8) == 0
+-                    || memcmp( cp1, "/usr/lib", 8) == 0)) {
+-        memmove( cp1, cp1 + 4, len - 4 + 1);    /* Remove "/usr"    */
+-        len -= 4;
+-    }
+-    if (*cp1 == '/' && (len < 10 || memcmp( cp1, cygdrive, 10) != 0)) {
+-        /* /dir, not /cygdrive/     */
+-        if (! root_dir_len) {           /* Should be initialized    */
+-            /* Convert "X:\DIR-list" to "/cygdrive/x/dir-list"      */
+-            root_dir = xmalloc( strlen( CYGWIN_ROOT_DIRECTORY) + 1);
+-            strcpy( root_dir, CYGWIN_ROOT_DIRECTORY);
+-            *(root_dir + 1) = *root_dir;        /* "x:/" to " x/"   */
+-            cp1 = xmalloc( strlen( cygdrive) + strlen( root_dir));
+-            strcpy( cp1, cygdrive);
+-            strcat( cp1, root_dir + 1);
+-            free( root_dir);
+-            root_dir = cp1;
+-            root_dir_len = strlen( root_dir);
+-        }
+-        cp1 = xmalloc( root_dir_len + len + 1);
+-        strcpy( cp1, root_dir);
+-        strcat( cp1, norm_name);        /* Convert to absolute path */
+-        free( norm_name);
+-        norm_name = start = cp1;
+-        len += root_dir_len;
+-    }
+-#endif
+-
+ #if SYSTEM == SYS_MINGW
+     /* Handle the mess of MinGW's path-list */
+     /* Convert to "x:/dir" style of absolute path-list  */

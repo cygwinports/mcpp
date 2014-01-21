@@ -1,6 +1,6 @@
 NAME="mcpp"
 VERSION=2.7.2
-RELEASE=1
+RELEASE=2
 CATEGORY="Devel"
 SUMMARY="C/C++ preprocessor"
 DESCRIPTION="mcpp is a C/C++ preprocessor with the highest conformance which
@@ -13,6 +13,8 @@ PATCH_URI="
 	http://pkgs.fedoraproject.org/cgit/mcpp.git/plain/mcpp-manual.html.patch
 	http://pkgs.fedoraproject.org/cgit/mcpp.git/plain/patch.mcpp.2.7.2
 	http://pkgs.fedoraproject.org/cgit/mcpp.git/plain/mcpp-man.patch
+	2.7.2-remove-cygdrive-mangling.patch
+	2.7.2-remove-mno-cygwin.patch
 "
 
 CYGPORT_USE_UNSTABLE_API=1

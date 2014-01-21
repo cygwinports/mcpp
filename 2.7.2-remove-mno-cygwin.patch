@@ -1,0 +1,99 @@
+--- origsrc/mcpp-2.7.2/src/set_mcpp.sh	2008-10-01 04:35:51.000000000 -0500
++++ src/mcpp-2.7.2/src/set_mcpp.sh	2014-01-21 11:22:10.330888000 -0600
+@@ -108,13 +108,6 @@ idir=mcpp-gcc
+ ar=
+ arch_headers
+ 
+-if test $host_system = SYS_CYGWIN; then
+-    ## CYGWIN has 'mingw' include directory for '-mno-cygwin' option
+-    idir=mingw/mcpp-gcc
+-    ar="-mno-cygwin"
+-    arch_headers
+-fi
+-
+ # write shell-script so that call of 'cpp0', 'cc1 -E' or so is replaced to
+ # call of mcpp
+ echo "  cd $cpp_path"
+--- origsrc/mcpp-2.7.2/src/system.c	2014-01-21 11:18:52.213230300 -0600
++++ src/mcpp-2.7.2/src/system.c	2014-01-21 11:23:41.348945800 -0600
+@@ -344,10 +344,7 @@ static int      wchar_t_modified = FALSE
+ static const char *     optim_name = "__LCCOPTIMLEVEL";
+ #endif
+ 
+-#if SYSTEM == SYS_CYGWIN
+-static int      no_cygwin = FALSE;          /* -mno-cygwin          */
+-
+-#elif   SYSTEM == SYS_MAC
++#if   SYSTEM == SYS_MAC
+ #define         MAX_FRAMEWORK   8
+ static char *   framework[ MAX_FRAMEWORK];  /* Framework directories*/
+ static int      num_framework;          /* Current number of framework[]    */
+@@ -392,9 +389,7 @@ void    init_system( void)
+ #if COMPILER == GNUC || COMPILER == MSC
+     preinc_end = preinclude;
+ #endif
+-#if SYSTEM == SYS_CYGWIN
+-    no_cygwin = FALSE;
+-#elif   SYSTEM == SYS_MAC
++#if   SYSTEM == SYS_MAC
+     num_framework = sys_framework = 0;
+     to_search_framework = NULL;
+ #endif
+@@ -923,12 +918,6 @@ plus:
+             }
+ #endif  /* SYS_FAMILY == UNIX   */
+ #if COMPILER == GNUC
+-#if SYSTEM == SYS_CYGWIN
+-            if (str_eq( mcpp_optarg, "no-cygwin")) {    /* -mno-cygwin      */
+-                no_cygwin = TRUE;
+-                break;
+-            }
+-#endif
+             if (! integrated_cpp)
+                 usage( opt);
+             break;
+@@ -2266,15 +2255,8 @@ static void set_sys_dirs(
+ #endif
+ 
+ #if SYS_FAMILY == SYS_UNIX
+-#if SYSTEM == SYS_CYGWIN
+-    if (no_cygwin)                          /* -mno-cygwin          */
+-        set_a_dir( "/usr/include/mingw");
+-    else
+-        set_a_dir( "/usr/include");
+-#else
+     set_a_dir( "/usr/include"); /* Should be placed after C_INCLUDE_DIR?    */
+ #endif
+-#endif
+ }
+ 
+ static void set_a_dir(
+@@ -2750,15 +2698,7 @@ static void init_gcc_macro( void)
+ 
+     tmp = xmalloc( strlen( INC_DIR) + strlen( "/mingw/mcpp-gcc-")
+             + strlen( arch) + 1);
+-#if SYSTEM == SYS_CYGWIN
+-    if (no_cygwin) {
+-        sprintf( tmp, "%s/mingw/mcpp-gcc-%s", INC_DIR, arch);
+-    } else {
+-        sprintf( tmp, "%s/mcpp-gcc-%s", INC_DIR, arch);
+-    }
+-#else
+     sprintf( tmp, "%s/mcpp-gcc-%s", INC_DIR, arch);
+-#endif
+     include_dir = norm_path( tmp, NULL, TRUE, FALSE);
+     free( tmp);
+ 
+--- origsrc/mcpp-2.7.2/src/unset_mcpp.sh	2008-09-22 04:25:32.000000000 -0500
++++ src/mcpp-2.7.2/src/unset_mcpp.sh	2014-01-21 11:23:52.097810800 -0600
+@@ -24,10 +24,6 @@ fi
+ 
+ echo "  rm -fr $inc_dir/mcpp-gcc*"
+ rm -fr $inc_dir/mcpp-gcc*
+-if test $host_system = SYS_CYGWIN; then
+-    echo "  rm -fr $inc_dir/mingw"
+-    rm -fr $inc_dir/mingw
+-fi
+ 
+ echo "  cd $cpp_path"
+ cd $cpp_path
